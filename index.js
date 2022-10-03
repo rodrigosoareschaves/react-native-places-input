@@ -42,7 +42,6 @@ class PlacesInput extends Component {
       <View style={[styles.container, this.props.stylesContainer]}>
         <TextInput
           placeholder={this.props.placeHolder}
-          placeholderTextColor={this.props.placeholderTextColor}
           style={[styles.input, this.props.stylesInput]}
           onChangeText={query => {
             this.setState({query}, () => {
@@ -149,16 +148,23 @@ class PlacesInput extends Component {
         isLoading: true,
       },
       async () => {
-        const places = await fetch(
-          `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${
-            this.state.query
-          }&key=${this.props.googleApiKey}&inputtype=textquery&language=${
-            this.props.language
-          }&fields=${
-            this.props.queryFields
-          }${this.buildLocationQuery()}${this.buildCountryQuery()}${this.buildTypesQuery()}${this.buildSessionQuery()}`
-        ).then(response => response.json());
-
+        var url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${
+          this.state.query
+        }&key=${this.props.googleApiKey}&inputtype=textquery&language=${
+          this.props.language
+        }&fields=${
+          this.props.queryFields
+        }${this.buildLocationQuery()}${this.buildCountryQuery()}${this.buildTypesQuery()}${this.buildSessionQuery()}`;
+        console.log('FETCH GOOGLE ');
+        console.log(url);
+        var params = {
+          "headers": {
+            'x-android-package': this.props.appCode,
+            'x-android-cert': this.props.appFingerPrint,
+          }
+        }
+        const places = await fetch(url,params).then(response => response.json());
+        console.log(places);
         this.setState({
           isLoading: false,
           places: places.predictions,
@@ -174,9 +180,15 @@ class PlacesInput extends Component {
       isLoading: true,
     }, async () => {
       try {
+        var params = {
+          "headers": {
+            'x-android-package': this.props.appCode,
+            'x-android-cert': this.props.appFingerPrint,
+          }
+        }
         const place = await fetch(
           `https://maps.googleapis.com/maps/api/place/details/json?placeid=${id}&key=${this.props.googleApiKey}&fields=${this.props.queryFields}&language=${this.props.language}${this.buildSessionQuery()}`
-        ).then(response => response.json());
+        ,params).then(response => response.json());
 
         return this.setState(
           {
@@ -228,7 +240,6 @@ PlacesInput.propTypes = {
   searchLongitude: PropTypes.number,
   googleApiKey: PropTypes.string.isRequired,
   placeHolder: PropTypes.string,
-  placeholderTextColor: PropTypes.string,
   textInputProps: PropTypes.object,
   iconResult: PropTypes.any,
   iconInput: PropTypes.any,
@@ -248,7 +259,6 @@ PlacesInput.defaultProps = {
   stylesItemText: {},
   queryFields: 'formatted_address,geometry,name',
   placeHolder: 'Search places...',
-  placeholderTextColor: "#000000",
   textInputProps: {},
   language: 'en',
   resultRender: place => place.description,
