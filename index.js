@@ -157,12 +157,15 @@ class PlacesInput extends Component {
         }${this.buildLocationQuery()}${this.buildCountryQuery()}${this.buildTypesQuery()}${this.buildSessionQuery()}`;
         console.log('FETCH GOOGLE ');
         console.log(url);
+        
         var params = {
           "headers": {
             'x-android-package': this.props.appCode,
+            'x-ios-bundle-identifier': this.props.appCode,
             'x-android-cert': this.props.appFingerPrint,
           }
         }
+        console.log(params);
         const places = await fetch(url,params).then(response => response.json());
         console.log(places);
         this.setState({
@@ -183,6 +186,7 @@ class PlacesInput extends Component {
         var params = {
           "headers": {
             'x-android-package': this.props.appCode,
+            'x-ios-bundle-identifier': this.props.appCode,
             'x-android-cert': this.props.appFingerPrint,
           }
         }
